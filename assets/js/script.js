@@ -118,7 +118,6 @@ function fetchAPI(lat, lon, cityInput) {
 function fetchGeocode() {
     var lat = 0;
     var lon = 0;
-
     // Clear containers
     dashboard.empty();
     forecastSection.empty();
@@ -130,6 +129,7 @@ function fetchGeocode() {
     fetch(apiCall)
     .then(response => response.json())
     .then(data => {
+        
         // To store each input's latitude and longitud coordinates
         lat = data[0].lat;
         lon = data[0].lon;
