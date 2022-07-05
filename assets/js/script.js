@@ -13,7 +13,7 @@ var humidity;
 var uvIndex;
 
 // Create dashboard with the information gathered
-function generateDashboard(temp, wind, humidity, uvIndex, cityInput) {
+function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
     var dashboard = $(".dashboard");
     // Card container
     var cardContainer = $('<div class="card text-bg-dark mb-3">').css("max-width", "18rem");
@@ -31,8 +31,24 @@ function generateDashboard(temp, wind, humidity, uvIndex, cityInput) {
     cardBody.append(uvIndexText);
     cardContainer.append(cardBody);
     
-    
+    // Append container to the HTML
     dashboard.append(cardContainer);
+}
+
+// Create dashboard for the 5-day forecast
+function generate5DayDashboard(lat, lon) {
+    var apiCall = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
+
+    fetch(apiCall)
+    .then(response => response.json())
+    .then(data => {
+        for (var i = 0; i < data.length; ) {
+            // Generate a card for each future forecast
+            miniCard(data[i]);
+            if (i === 0) i += 7
+            else i += 8
+        }
+    });
 }
 
 // Fetch data from api when button is clicked to populate dashboard
@@ -48,8 +64,10 @@ function fetchAPI(lat, lon, cityInput) {
         humidity = data.current.humidity;
         uvIndex = data.current.uvi;
 
-        // Call function to generate dashboard
-        generateDashboard(temp, wind, humidity, uvIndex, cityInput);
+        // Call function to generate main dashboard
+        generateMainDashboard(temp, wind, humidity, uvIndex, cityInput);
+        // Call function to generate 5-day dashboard
+        generate5DayDashboard(lat, lon);
     });
 }
 
