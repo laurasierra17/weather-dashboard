@@ -10,14 +10,18 @@ var wind;
 var humidity;
 var uvIndex;
 
-// Fetch data from api when button is clicked
+// Fetch data from api when button is clicked to populate dashboard
 function fetchAPI(lat, lon) {    
     // API call
-    var apiCall = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&exclude={part}&appid=${apiKey}`
+    var apiCall = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude={part}&appid=${apiKey}`
     fetch(apiCall)
-        .then(response => response.json())
-        .then(data => console.log(data));
-    
+    .then(response => response.json())
+    .then(data => {
+        temp = data.current.temp;
+        wind = data.current.wind_speed;
+        humidity = data.current.humidity;
+        uvIndex = data.current.uvi;
+    });
 }
 
 // Get latitude and longitude for city entered
@@ -25,13 +29,13 @@ function fetchGeocode() {
     var apiCall = `http://api.openweathermap.org/geo/1.0/direct?q=${searchInput.val()}&limit=5&appid=${apiKey}`
     
     fetch(apiCall)
-        .then(response => response.json())
-        .then(data => {
-            // To store each input's latitude and longitud coordinates
-            var lat = data[0].lat.toFixed(2);
-            var lon = data[0].lon.toFixed(2);
-            fetchAPI(lat, lon)
-        })
+    .then(response => response.json())
+    .then(data => {
+        // To store each input's latitude and longitud coordinates
+        var lat = data[0].lat.toFixed(2);
+        var lon = data[0].lon.toFixed(2);
+        fetchAPI(lat, lon)
+    })
 }
 
 // Load city's weather info upon click
