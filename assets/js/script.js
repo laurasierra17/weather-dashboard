@@ -5,6 +5,8 @@ var searchBtn = $(".search-btn");
 var searchInput = $(".search-input");
 // Point to previous search history section
 var prevSearch = $(".results-section");
+// Point to main dashboard
+var dashboard = $(".dashboard");
 // Point to section for the 5-day forecast
 var forecastSection = $(".forecast");
 
@@ -14,6 +16,7 @@ var wind;
 var humidity;
 var uvIndex;
 
+// Format and display 5-day forecast
 function miniCard(day, j) {
     temp = day.main.temp;
     wind = day.wind.speed;
@@ -57,7 +60,6 @@ function generate5DayDashboard(lat, lon) {
 
 // Create dashboard with the information gathered
 function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
-    var dashboard = $(".dashboard");
     // Card container
     var cardContainer = $('<div class="col-12 card text-bg-dark mb-3">').css("max-width", "18rem");
     // Card body; capitalize first letter
@@ -70,7 +72,20 @@ function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
     cardBody.append(windText);
     var humidityText = $('<p class="card-text">').text("Humidity: " + humidity + " %");
     cardBody.append(humidityText);
-    var uvIndexText = $('<p class="card-text">').text("UV Index: " + uvIndex);
+    var spanUV = $('<span>').text(uvIndex);
+    var uvIndexText = $('<p class="card-text">').text("UV Index: ");
+    uvIndexText.append(spanUV);
+
+
+    // Give background color to UV Index depending on its condition
+    if (uvIndex < 3) {
+        spanUV.addClass("bg-success text-white");
+    } else if (uvIndex >= 3 || uvIndex < 8) {
+        spanUV.addClass("bg-warning text-dark");
+    } else {
+        spanUV.addClass("bg-danger text-white");
+    }
+    
     cardBody.append(uvIndexText);
     cardContainer.append(cardBody);
     
@@ -101,6 +116,14 @@ function fetchAPI(lat, lon, cityInput) {
 
 // Get latitude and longitude for city entered
 function fetchGeocode() {
+    var lat = 0;
+    var lon = 0;
+
+    // Clear containers
+    dashboard.empty();
+    forecastSection.empty();
+
+    // Grab input value
     var cityInput = searchInput.val();
     var apiCall = `http://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=5&appid=${apiKey}`
 
@@ -108,8 +131,8 @@ function fetchGeocode() {
     .then(response => response.json())
     .then(data => {
         // To store each input's latitude and longitud coordinates
-        var lat = data[0].lat;
-        var lon = data[0].lon;
+        lat = data[0].lat;
+        lon = data[0].lon;
 
         fetchAPI(lat, lon, cityInput)
     })
