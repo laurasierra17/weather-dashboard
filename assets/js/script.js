@@ -14,7 +14,7 @@ var wind;
 var humidity;
 var uvIndex;
 
-function miniCard(day) {
+function miniCard(day, j) {
     temp = day.main.temp;
     wind = day.wind.speed;
     humidity = day.main.humidity;
@@ -23,6 +23,8 @@ function miniCard(day) {
     var col = $('<div class="card border-warning mb-3">').css("max-width", "18rem");
     // Card body
     var cardBody = $('<div class="card-body">');
+    var dateText = $('<h3 class="card-title">').text(moment().add(j, 'day').format('M/D/YYYY'));
+    cardBody.append(dateText)
     var tempText = $('<p class="card-text">').text("Temp: " + temp + "°F");
     cardBody.append(tempText);
     var windText = $('<p class="card-text">').text("Wind: " + wind + " MPH");
@@ -41,11 +43,14 @@ function generate5DayDashboard(lat, lon) {
     fetch(apiCall)
     .then(response => response.json())
     .then(data => {
-        for (var i = 0; i < data.list.length; ) {
+        // To indicate how many days to add to current day
+        var j = 1;
+        for (var i = 0; i < data.list.length - 1; ) {
             // Generate a card for each future forecast
-            miniCard(data.list[i]);
+            miniCard(data.list[i], j);
             if (i === 0) i += 7;
             else i += 8;
+            j++;
         }
     });
 }
@@ -57,7 +62,7 @@ function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
     var cardContainer = $('<div class="col-12 card text-bg-dark mb-3">').css("max-width", "18rem");
     // Card body; capitalize first letter
     var cardBody = $('<div class="card-body">');
-    var cardTitle = $('<h3 class="card-title">').text(cityInput).css("text-transform", "capitalize");
+    var cardTitle = $('<h3 class="card-title">').text(cityInput + " " + moment().format('M/D/YYYY')).css("text-transform", "capitalize");
     cardBody.append(cardTitle)
     var tempText = $('<p class="card-text">').text("Temp: " + temp + "°F");
     cardBody.append(tempText);
