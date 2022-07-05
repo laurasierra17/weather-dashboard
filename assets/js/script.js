@@ -15,14 +15,6 @@ var humidity;
 var uvIndex;
 
 function miniCard(day) {
-    // <div class="col-2 card border-warning mb-3" style="max-width: 18rem;">
-    //     <div class="card-header">Header</div>
-    //     <div class="card-body">
-    //         <h5 class="card-title">Warning card title</h5>
-    //         <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-    //     </div>
-    // </div>
-
     temp = day.main.temp;
     wind = day.wind.speed;
     humidity = day.main.humidity;
@@ -116,6 +108,9 @@ function fetchGeocode() {
 
         fetchAPI(lat, lon, cityInput)
     })
+
+    // Clear search input
+    searchInput.val("");
 }
 
 // Load city's weather info upon click
