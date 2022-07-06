@@ -3,6 +3,7 @@ var apiKey = "f68779a05e2dffd6da000fc8655e5f07";
 var searchBtn = $(".search-btn");
 // Input in the search section
 var searchInput = $(".search-input");
+var cityInput;
 // Point to previous search history section
 var prevSearch = $(".prev-section");
 // Point to main dashboard
@@ -10,7 +11,6 @@ var dashboard = $(".dashboard");
 // Point to section for the 5-day forecast
 var forecastSection = $(".forecast");
 
-var cityInput;
 
 // Data used to display information of the weather
 var temp;
@@ -182,6 +182,7 @@ function addForecastToLocalStorage(cityInput, date, temp, wind, humidity) {
     var prevData = localStorage.getItem(cityInput);
     prevData = JSON.parse(prevData);
     
+    // Check if there's already information on forecast
     if (prevData.forecast) {
         prevForecast.push(prevData.forecast);
     }
