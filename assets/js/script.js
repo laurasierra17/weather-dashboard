@@ -48,6 +48,10 @@ function generate5DayDashboard(lat, lon) {
     .then(data => {
         // To indicate how many days to add to current day
         var j = 1;
+        //Title for this section
+        var title = $("<h3>");
+        title.text("5-Day Forecast:");
+        forecastSection.append(title);
         for (var i = 0; i < data.list.length - 1; ) {
             // Generate a card for each future forecast
             miniCard(data.list[i], j);
