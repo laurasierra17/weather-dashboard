@@ -19,7 +19,7 @@ var humidity;
 var uvIndex;
 
 // Format and display 5-day forecast
-function miniCard(temp, wind, humidity, date) {
+function miniCard(temp, wind, humidity, date, icon) {
 
     // Column container
     var col = $('<div class="card border-warning mb-3">').css("max-width", "18rem");
@@ -27,6 +27,9 @@ function miniCard(temp, wind, humidity, date) {
     var cardBody = $('<div class="card-body">');
     var dateText = $('<h3 class="card-title">').text(date);
     cardBody.append(dateText)
+    var img = $('<img>');
+    img.attr("src", `http://openweathermap.org/img/wn/${icon}@2x.png`);
+    cardBody.append(img);
     var tempText = $('<p class="card-text">').text("Temp: " + temp + "°F");
     cardBody.append(tempText);
     var windText = $('<p class="card-text">').text("Wind: " + wind + " MPH");
@@ -40,11 +43,11 @@ function miniCard(temp, wind, humidity, date) {
     // Add next 5 days to local storage
     var storage = JSON.parse(localStorage.getItem(cityInput));
     if (!storage.prevForecast) {
-        addForecastToLocalStorage(cityInput, date, temp, wind, humidity);
+        addForecastToLocalStorage(cityInput, date, temp, wind, humidity, icon);
     } else if (storage.prevForecast && storage.prevForecast.length == 5) {
         return;
     } else {
-        addForecastToLocalStorage(cityInput, date, temp, wind, humidity);
+        addForecastToLocalStorage(cityInput, date, temp, wind, humidity, icon);
     }
 }
 
@@ -55,7 +58,6 @@ function generate5DayDashboard(lat, lon) {
     fetch(apiCall)
     .then(response => response.json())
     .then(data => {
-        console.log("data from generate5 ", data)
         // To indicate how many days to add to current day
         var j = 1;
         //Title for this section
@@ -64,9 +66,9 @@ function generate5DayDashboard(lat, lon) {
         forecastSection.append(title);
         for (var i = 0; i < data.list.length - 1; ) {
             // Generate a card for each future forecast
-            // miniCard(data.list[i], j);
             var date = moment().add(j, 'day').format('M/D/YYYY');
-            miniCard(data.list[i].main.temp, data.list[i].wind.speed, data.list[i].main.humidity, date)
+            console.log(data.list[i].weather[0].icon)
+            miniCard(data.list[i].main.temp, data.list[i].wind.speed, data.list[i].main.humidity, date, data.list[i].weather[0].icon)
             if (i === 0) i += 7;
             else i += 8;
             j++;
@@ -206,7 +208,7 @@ prevSearch.click((e) => {
         title.text("5-Day Forecast:");
         forecastSection.append(title);
         cityInfo.prevForecast.forEach(forecast => {
-            miniCard(forecast.temp, forecast.wind, forecast.humidity, forecast.date);
+            miniCard(forecast.temp, forecast.wind, forecast.humidity, forecast.date, forecast.icon);
         })
     }
 })
@@ -235,7 +237,7 @@ function addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date, icon)
 
 // Add future five dates to local storage
 var prevForecast = [];
-function addForecastToLocalStorage(cityInput, date, temp, wind, humidity) {
+function addForecastToLocalStorage(cityInput, date, temp, wind, humidity, icon) {
     // Ensures previous data on local storage doesn't get replaced, but added to it
     var prevData = localStorage.getItem(cityInput);
     prevData = JSON.parse(prevData);
@@ -249,7 +251,8 @@ function addForecastToLocalStorage(cityInput, date, temp, wind, humidity) {
         date: date,
         temp: temp,
         wind: wind,
-        humidity: humidity
+        humidity: humidity,
+        icon: icon
     }
     prevForecast.push(forecast);
     
