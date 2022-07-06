@@ -79,7 +79,7 @@ function generate5DayDashboard(lat, lon) {
 // Create dashboard with the information gathered
 function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput, icon) {
     // Card container
-    var cardContainer = $('<div class="col-12 card text-bg-dark mb-3">').css("max-width", "18rem");
+    var cardContainer = $('<div class="col card text-bg-dark mb-3 text-center">');
     // Card body; capitalize first letter
     var cardBody = $('<div class="card-body">');
     var date =  moment().format('M/D/YYYY');
@@ -94,7 +94,7 @@ function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput, icon) {
     cardBody.append(windText);
     var humidityText = $('<p class="card-text">').text("Humidity: " + humidity + " %");
     cardBody.append(humidityText);
-    var spanUV = $('<span>').text(uvIndex);
+    var spanUV = $('<span class="p-1">').text(uvIndex);
     var uvIndexText = $('<p class="card-text">').text("UV Index: ");
     uvIndexText.append(spanUV);
 
