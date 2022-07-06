@@ -27,7 +27,7 @@ function miniCard(temp, wind, humidity, date, icon) {
     var dateText = $('<h3 class="card-title">').text(date);
     cardBody.append(dateText)
     var img = $('<img>');
-    img.attr("src", `http://openweathermap.org/img/wn/${icon}@2x.png`);
+    img.attr("src", `https://openweathermap.org/img/wn/${icon}@2x.png`);
     cardBody.append(img);
     var tempText = $('<p class="card-text">').text("Temp: " + temp + "°F");
     cardBody.append(tempText);
