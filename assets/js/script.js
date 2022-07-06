@@ -21,7 +21,7 @@ var uvIndex;
 // Format and display 5-day forecast
 function miniCard(temp, wind, humidity, date, icon) {
     // Column container
-    var col = $('<div class="col-4 card border-warning m-2 p-2">').css("max-width", "fit-content");
+    var col = $('<div class="col-md-5 col-lg-4 card border-warning m-2 p-2">').css("max-width", "fit-content");
     // Card body
     var cardBody = $('<div class="card-body">');
     var dateText = $('<h3 class="card-title">').text(date);
