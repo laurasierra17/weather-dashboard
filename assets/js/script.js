@@ -162,8 +162,6 @@ function fetchGeocode() {
     prevForecast = [];
 }
 
-// Load city's weather info upon click
-searchBtn.click(fetchGeocode);
 
 // Populate previous search section
 var prevSearchArr = [];
@@ -172,11 +170,13 @@ function addToPrevSearch(cityInput) {
     if (!prevSearchArr.includes(cityInput)) {
         prevSearchArr.push(cityInput);
     }
-
+    
+    // Display previous searches
     displayPrevSearch(cityInput);
-
+    
 }
 
+// Displays previous searches
 function displayPrevSearch(cityInput) {
     var cityBtn = $('<button type="button" class="btn btn-secondary">');
     cityBtn.text(cityInput);
@@ -208,7 +208,7 @@ function addForecastToLocalStorage(cityInput, date, temp, wind, humidity) {
     if (prevData.forecast) {
         prevForecast.push(prevData.forecast);
     }
-
+    
     var forecast = {
         date: date,
         temp: temp,
@@ -216,7 +216,19 @@ function addForecastToLocalStorage(cityInput, date, temp, wind, humidity) {
         humidity: humidity
     }
     prevForecast.push(forecast);
-
+    
     window.localStorage.setItem(cityInput, JSON.stringify({...prevData, prevForecast}));
-
 }
+
+// Load city's weather info upon click
+searchBtn.click(fetchGeocode);
+
+// When user clicks a previous search, populate text from local storage info
+
+// Display previous searches upon page load
+$(() => {
+    // populate prevSearchArr array with the items in local storage
+    var keys = Object.keys(localStorage);
+    prevSearchArr = keys.map(key => key);
+    console.log(prevSearchArr)
+})
