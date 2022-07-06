@@ -18,12 +18,8 @@ var wind;
 var humidity;
 var uvIndex;
 
-// Containers for miniCard (forecastSection)
-
-
 // Format and display 5-day forecast
 function miniCard(temp, wind, humidity, date, icon) {
-
     // Column container
     var col = $('<div class="col-4 card border-warning m-2 p-2">').css("max-width", "fit-content");
     // Card body
@@ -89,7 +85,7 @@ function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput, icon) {
     var cardTitle = $('<h3 class="card-title">').text(cityInput + " " + date).css("text-transform", "capitalize");
     cardBody.append(cardTitle)
     var img = $('<img>');
-    img.attr("src", `http://openweathermap.org/img/wn/${icon}@2x.png`);
+    img.attr("src", `https://openweathermap.org/img/wn/${icon}@2x.png`);
     cardBody.append(img);
     var tempText = $('<p class="card-text">').text("Temp: " + temp + "°F");
     cardBody.append(tempText);
@@ -162,7 +158,6 @@ function fetchGeocode() {
     fetch(apiCall)
     .then(response => response.json())
     .then(data => {
-        
         // To store each input's latitude and longitud coordinates
         lat = data[0].lat;
         lon = data[0].lon;
