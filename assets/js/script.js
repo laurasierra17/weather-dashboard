@@ -157,7 +157,7 @@ function fetchGeocode() {
 
     // Grab input value
     cityInput = searchInput.val();
-    var apiCall = `http://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=5&appid=${apiKey}`
+    var apiCall = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=5&appid=${apiKey}`
 
     fetch(apiCall)
     .then(response => response.json())
