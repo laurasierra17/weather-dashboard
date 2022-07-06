@@ -163,32 +163,48 @@ function fetchGeocode() {
     dashboard.empty();
     forecastSection.empty();
 
-    // Grab input value
-    cityInput = searchInput.val();
-    var apiCall = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=5&appid=${apiKey}`
+    // Grab input value if it isn't empty
+    if (searchInput.val()) {
+        $('.input-error-section').empty();
+        cityInput = searchInput.val();
+        var apiCall = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=5&appid=${apiKey}`
+    
+        fetch(apiCall)
+        .then(response => {
+            if (response.ok) return response.json()
+            throw new Error("Response error calling Geocode API");
+        })
+        .then(data => {
+            // To store each input's latitude and longitud coordinates
+            lat = data[0].lat;
+            lon = data[0].lon;
+            fetchAPI(lat, lon, cityInput);
+        })
+        .catch(error => {
+            console.log(error);
+        })
+    
+        // Populate previous searches section
+        addToPrevSearch(cityInput);
+    
+        // Clear search input
+        searchInput.val("");
+        // Clear array used to store next 5 days in local storage
+        prevForecast = [];
+    } else {
+        var time = 0;
 
-    fetch(apiCall)
-    .then(response => {
-        if (response.ok) return response.json()
-        throw new Error("Response error calling Geocode API");
-    })
-    .then(data => {
-        // To store each input's latitude and longitud coordinates
-        lat = data[0].lat;
-        lon = data[0].lon;
-        fetchAPI(lat, lon, cityInput);
-    })
-    .catch(error => {
-        console.log(error);
-    })
+        // Show message to prompt user to type the name of a city
+        var interval = setInterval(() => {
+            $('.input-error-section').text("Please type in the name of a city");
+            time++;
 
-    // Populate previous searches section
-    addToPrevSearch(cityInput);
-
-    // Clear search input
-    searchInput.val("");
-    // Clear array used to store next 5 days in local storage
-    prevForecast = [];
+            if (time == 4) {
+                clearInterval(interval);
+                $('.input-error-section').empty();
+            }
+        }, 1000);
+    }
 }
 
 
