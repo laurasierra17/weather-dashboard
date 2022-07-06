@@ -200,7 +200,7 @@ prevSearch.click((e) => {
 
 // Displays previous searches
 function displayPrevSearch(cityInput) {
-    var cityBtn = $('<button type="button" class="btn btn-secondary">');
+    var cityBtn = $('<button type="button" class="btn btn-secondary m-2">');
     cityBtn.text(cityInput);
     cityBtn.attr("data-city", cityInput);
     prevSearch.append(cityBtn);
