@@ -38,7 +38,14 @@ function miniCard(temp, wind, humidity, date) {
     forecastSection.append(col);
 
     // Add next 5 days to local storage
-    addForecastToLocalStorage(cityInput, date, temp, wind, humidity);
+    var storage = JSON.parse(localStorage.getItem(cityInput));
+    if (!storage.prevForecast) {
+        addForecastToLocalStorage(cityInput, date, temp, wind, humidity);
+    } else if (storage.prevForecast && storage.prevForecast.length == 5) {
+        return;
+    } else {
+        addForecastToLocalStorage(cityInput, date, temp, wind, humidity);
+    }
 }
 
 // Create dashboard for the 5-day forecast
@@ -103,7 +110,7 @@ function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
 
     // Save current to local storage
     // Add cityInput to the previous search section and local storage
-    addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date);
+    if (!localStorage.getItem(cityInput)) addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date);
 }
 
 
