@@ -153,6 +153,9 @@ function fetchGeocode() {
         fetchAPI(lat, lon, cityInput)
     })
 
+    // Populate previous searches section
+    addToPrevSearch(cityInput);
+
     // Clear search input
     searchInput.val("");
     // Clear array used to store next 5 days in local storage
@@ -161,6 +164,25 @@ function fetchGeocode() {
 
 // Load city's weather info upon click
 searchBtn.click(fetchGeocode);
+
+// Populate previous search section
+var prevSearchArr = [];
+function addToPrevSearch(cityInput) {
+    // create data attribute set to the city name
+    if (!prevSearchArr.includes(cityInput)) {
+        prevSearchArr.push(cityInput);
+    }
+
+    displayPrevSearch(cityInput);
+
+}
+
+function displayPrevSearch(cityInput) {
+    var cityBtn = $('<button type="button" class="btn btn-secondary">');
+    cityBtn.text(cityInput);
+    cityBtn.attr("data-city", cityInput);
+    prevSearch.append(cityBtn);
+}
 
 // Add current weather info to local storage
 function addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date) {
