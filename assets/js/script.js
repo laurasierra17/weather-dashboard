@@ -55,6 +55,7 @@ function generate5DayDashboard(lat, lon) {
     fetch(apiCall)
     .then(response => response.json())
     .then(data => {
+        console.log("data from generate5 ", data)
         // To indicate how many days to add to current day
         var j = 1;
         //Title for this section
@@ -74,7 +75,7 @@ function generate5DayDashboard(lat, lon) {
 }
 
 // Create dashboard with the information gathered
-function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
+function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput, icon) {
     // Card container
     var cardContainer = $('<div class="col-12 card text-bg-dark mb-3">').css("max-width", "18rem");
     // Card body; capitalize first letter
@@ -82,6 +83,9 @@ function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
     var date =  moment().format('M/D/YYYY');
     var cardTitle = $('<h3 class="card-title">').text(cityInput + " " + date).css("text-transform", "capitalize");
     cardBody.append(cardTitle)
+    var img = $('<img>');
+    img.attr("src", `http://openweathermap.org/img/wn/${icon}@2x.png`);
+    cardBody.append(img);
     var tempText = $('<p class="card-text">').text("Temp: " + temp + "°F");
     cardBody.append(tempText);
     var windText = $('<p class="card-text">').text("Wind: " + wind + " MPH");
@@ -110,7 +114,7 @@ function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
 
     // Save current to local storage
     // Add cityInput to the previous search section and local storage
-    if (!localStorage.getItem(cityInput)) addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date);
+    if (!localStorage.getItem(cityInput)) addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date, icon);
 }
 
 
@@ -126,10 +130,12 @@ function fetchAPI(lat, lon, cityInput) {
         wind = data.current.wind_speed;
         humidity = data.current.humidity;
         uvIndex = data.current.uvi;
+        // Weather icon
+        var icon = data.current.weather[0].icon;
 
         if (!localStorage.getItem(cityInput)) {
             // Call function to generate main dashboard
-            generateMainDashboard(temp, wind, humidity, uvIndex, cityInput);
+            generateMainDashboard(temp, wind, humidity, uvIndex, cityInput, icon);
             // Call function to generate 5-day dashboard
             generate5DayDashboard(lat, lon);
         }
@@ -155,8 +161,7 @@ function fetchGeocode() {
         // To store each input's latitude and longitud coordinates
         lat = data[0].lat;
         lon = data[0].lon;
-
-        fetchAPI(lat, lon, cityInput)
+        fetchAPI(lat, lon, cityInput);
     })
 
     // Populate previous searches section
@@ -193,12 +198,13 @@ prevSearch.click((e) => {
         dashboard.empty();
         forecastSection.empty();
         var cityInfo = JSON.parse(localStorage.getItem(btnClicked));
-        console.log(cityInfo);
 
-        // If the date stored in local storage is different from right now, rerun the others
+        generateMainDashboard(cityInfo.temp, cityInfo.wind, cityInfo.humidity, cityInfo.uvIndex, btnClicked, cityInfo.icon);
 
-        generateMainDashboard(cityInfo.temp, cityInfo.wind, cityInfo.humidity, cityInfo.uvIndex, btnClicked);
-
+        //Title for this section
+        var title = $("<h3>");
+        title.text("5-Day Forecast:");
+        forecastSection.append(title);
         cityInfo.prevForecast.forEach(forecast => {
             miniCard(forecast.temp, forecast.wind, forecast.humidity, forecast.date);
         })
@@ -214,13 +220,14 @@ function displayPrevSearch(cityInput) {
 }
 
 // Add current weather info to local storage
-function addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date) {
+function addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date, icon) {
     const current = {
         date: date,
         temp: temp,
         wind: wind,
-        humidity, humidity,
-        uvIndex, uvIndex
+        humidity: humidity,
+        uvIndex: uvIndex,
+        icon: icon
     }
     
     window.localStorage.setItem(cityInput, JSON.stringify(current))
