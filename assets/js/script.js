@@ -18,11 +18,14 @@ var wind;
 var humidity;
 var uvIndex;
 
+// Containers for miniCard (forecastSection)
+
+
 // Format and display 5-day forecast
 function miniCard(temp, wind, humidity, date, icon) {
 
     // Column container
-    var col = $('<div class="card border-warning mb-3">').css("max-width", "18rem");
+    var col = $('<div class="col-4 card border-warning m-2 p-2">').css("max-width", "fit-content");
     // Card body
     var cardBody = $('<div class="card-body">');
     var dateText = $('<h3 class="card-title">').text(date);
@@ -60,14 +63,14 @@ function generate5DayDashboard(lat, lon) {
     .then(data => {
         // To indicate how many days to add to current day
         var j = 1;
+
         //Title for this section
-        var title = $("<h3>");
+        var title = $('<h3>');
         title.text("5-Day Forecast:");
         forecastSection.append(title);
         for (var i = 0; i < data.list.length - 1; ) {
             // Generate a card for each future forecast
             var date = moment().add(j, 'day').format('M/D/YYYY');
-            console.log(data.list[i].weather[0].icon)
             miniCard(data.list[i].main.temp, data.list[i].wind.speed, data.list[i].main.humidity, date, data.list[i].weather[0].icon)
             if (i === 0) i += 7;
             else i += 8;
