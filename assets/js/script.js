@@ -230,5 +230,6 @@ $(() => {
     // populate prevSearchArr array with the items in local storage
     var keys = Object.keys(localStorage);
     prevSearchArr = keys.map(key => key);
-    console.log(prevSearchArr)
+    
+    prevSearchArr.forEach(search => displayPrevSearch(search));
 })
