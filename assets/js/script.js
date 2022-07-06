@@ -4,11 +4,13 @@ var searchBtn = $(".search-btn");
 // Input in the search section
 var searchInput = $(".search-input");
 // Point to previous search history section
-var prevSearch = $(".results-section");
+var prevSearch = $(".prev-section");
 // Point to main dashboard
 var dashboard = $(".dashboard");
 // Point to section for the 5-day forecast
 var forecastSection = $(".forecast");
+
+var cityInput;
 
 // Data used to display information of the weather
 var temp;
@@ -22,11 +24,13 @@ function miniCard(day, j) {
     wind = day.wind.speed;
     humidity = day.main.humidity;
 
+    var date = moment().add(j, 'day').format('M/D/YYYY');
+
     // Column container
     var col = $('<div class="card border-warning mb-3">').css("max-width", "18rem");
     // Card body
     var cardBody = $('<div class="card-body">');
-    var dateText = $('<h3 class="card-title">').text(moment().add(j, 'day').format('M/D/YYYY'));
+    var dateText = $('<h3 class="card-title">').text(date);
     cardBody.append(dateText)
     var tempText = $('<p class="card-text">').text("Temp: " + temp + "°F");
     cardBody.append(tempText);
@@ -37,6 +41,9 @@ function miniCard(day, j) {
 
     col.append(cardBody);
     forecastSection.append(col);
+
+    // Add next 5 days to local storage
+    addForecastToLocalStorage(cityInput, date, temp, wind, humidity);
 }
 
 // Create dashboard for the 5-day forecast
@@ -68,7 +75,8 @@ function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
     var cardContainer = $('<div class="col-12 card text-bg-dark mb-3">').css("max-width", "18rem");
     // Card body; capitalize first letter
     var cardBody = $('<div class="card-body">');
-    var cardTitle = $('<h3 class="card-title">').text(cityInput + " " + moment().format('M/D/YYYY')).css("text-transform", "capitalize");
+    var date =  moment().format('M/D/YYYY');
+    var cardTitle = $('<h3 class="card-title">').text(cityInput + " " + date).css("text-transform", "capitalize");
     cardBody.append(cardTitle)
     var tempText = $('<p class="card-text">').text("Temp: " + temp + "°F");
     cardBody.append(tempText);
@@ -95,6 +103,10 @@ function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput) {
     
     // Append container to the HTML
     dashboard.append(cardContainer);
+
+    // Save current to local storage
+    // Add cityInput to the previous search section and local storage
+    addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date);
 }
 
 
@@ -127,7 +139,7 @@ function fetchGeocode() {
     forecastSection.empty();
 
     // Grab input value
-    var cityInput = searchInput.val();
+    cityInput = searchInput.val();
     var apiCall = `http://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=5&appid=${apiKey}`
 
     fetch(apiCall)
@@ -143,26 +155,45 @@ function fetchGeocode() {
 
     // Clear search input
     searchInput.val("");
+    // Clear array used to store next 5 days in local storage
+    prevForecast = [];
 }
 
 // Load city's weather info upon click
 searchBtn.click(fetchGeocode);
 
+// Add current weather info to local storage
+function addToLocalStorage(cityInput, temp, wind, humidity, uvIndex, date) {
+    const current = {
+        date: date,
+        temp: temp,
+        wind: wind,
+        humidity, humidity,
+        uvIndex, uvIndex
+    }
+    
+    window.localStorage.setItem(cityInput, JSON.stringify(current))
+}
 
-// Check local storage as soon as the page loads
-// $(function () {
+// Add future five dates to local storage
+var prevForecast = [];
+function addForecastToLocalStorage(cityInput, date, temp, wind, humidity) {
+    // Ensures previous data on local storage doesn't get replaced, but added to it
+    var prevData = localStorage.getItem(cityInput);
+    prevData = JSON.parse(prevData);
+    
+    if (prevData.forecast) {
+        prevForecast.push(prevData.forecast);
+    }
 
-// })
+    var forecast = {
+        date: date,
+        temp: temp,
+        wind: wind,
+        humidity: humidity
+    }
+    prevForecast.push(forecast);
 
-// page starts
-// 1. check local storage to see if there are any values already there
-    // a. if there is, populate prev cities list
-    // when those cities are clicked, the data for the dashboard is pulled from the local storage
-    // b. if there is not, carry as usual
-// 2. data to push to local storage:
-    // - city name
-    // - date (momentjs)
-    // - temp
-    // - wind
-    // - humidity
-    // - uv index 
+    window.localStorage.setItem(cityInput, JSON.stringify({...prevData, prevForecast}));
+
+}
