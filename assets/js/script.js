@@ -55,7 +55,10 @@ function generate5DayDashboard(lat, lon) {
     var apiCall = `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&appid=${apiKey}`;
 
     fetch(apiCall)
-    .then(response => response.json())
+    .then(response => {
+        if (response.ok) return response.json()
+        throw new Error("Response error calling 5-day Forecast API");
+    })
     .then(data => {
         // To indicate how many days to add to current day
         var j = 1;
@@ -72,13 +75,16 @@ function generate5DayDashboard(lat, lon) {
             else i += 8;
             j++;
         }
+    })
+    .catch(error => {
+        console.log(error);
     });
 }
 
 // Create dashboard with the information gathered
 function generateMainDashboard(temp, wind, humidity, uvIndex, cityInput, icon) {
     // Card container
-    var cardContainer = $('<div class="col card text-bg-secondary bg-opacity-75 border border-warning mb-3 text-center">');
+    var cardContainer = $('<div class="col card text-bg-secondary bg-opacity-50 border border-warning mb-3 text-center text-black">');
     // Card body; capitalize first letter
     var cardBody = $('<div class="card-body">');
     var date =  moment().format('M/D/YYYY');
@@ -124,7 +130,10 @@ function fetchAPI(lat, lon, cityInput) {
     // API call
     var apiCall = `https://api.openweathermap.org/data/2.5/onecall?lat=${lat}&lon=${lon}&units=imperial&exclude={part}&appid=${apiKey}`
     fetch(apiCall)
-    .then(response => response.json())
+    .then(response => {
+        if (response.ok) return response.json()
+        throw new Error("Response error calling OneCall API");
+    })
     .then(data => {
         // Retrieve data needed for the dashboard
         temp = data.current.temp;
@@ -140,6 +149,9 @@ function fetchAPI(lat, lon, cityInput) {
             // Call function to generate 5-day dashboard
             generate5DayDashboard(lat, lon);
         }
+    })
+    .catch(error => {
+        console.log(error);
     });
 }
 
@@ -156,12 +168,18 @@ function fetchGeocode() {
     var apiCall = `https://api.openweathermap.org/geo/1.0/direct?q=${cityInput}&limit=5&appid=${apiKey}`
 
     fetch(apiCall)
-    .then(response => response.json())
+    .then(response => {
+        if (response.ok) return response.json()
+        throw new Error("Response error calling Geocode API");
+    })
     .then(data => {
         // To store each input's latitude and longitud coordinates
         lat = data[0].lat;
         lon = data[0].lon;
         fetchAPI(lat, lon, cityInput);
+    })
+    .catch(error => {
+        console.log(error);
     })
 
     // Populate previous searches section
