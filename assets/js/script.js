@@ -19,12 +19,7 @@ var humidity;
 var uvIndex;
 
 // Format and display 5-day forecast
-function miniCard(day, j) {
-    temp = day.main.temp;
-    wind = day.wind.speed;
-    humidity = day.main.humidity;
-
-    var date = moment().add(j, 'day').format('M/D/YYYY');
+function miniCard(temp, wind, humidity, date) {
 
     // Column container
     var col = $('<div class="card border-warning mb-3">').css("max-width", "18rem");
@@ -61,7 +56,9 @@ function generate5DayDashboard(lat, lon) {
         forecastSection.append(title);
         for (var i = 0; i < data.list.length - 1; ) {
             // Generate a card for each future forecast
-            miniCard(data.list[i], j);
+            // miniCard(data.list[i], j);
+            var date = moment().add(j, 'day').format('M/D/YYYY');
+            miniCard(data.list[i].main.temp, data.list[i].wind.speed, data.list[i].main.humidity, date)
             if (i === 0) i += 7;
             else i += 8;
             j++;
@@ -123,10 +120,12 @@ function fetchAPI(lat, lon, cityInput) {
         humidity = data.current.humidity;
         uvIndex = data.current.uvi;
 
-        // Call function to generate main dashboard
-        generateMainDashboard(temp, wind, humidity, uvIndex, cityInput);
-        // Call function to generate 5-day dashboard
-        generate5DayDashboard(lat, lon);
+        if (!localStorage.getItem(cityInput)) {
+            // Call function to generate main dashboard
+            generateMainDashboard(temp, wind, humidity, uvIndex, cityInput);
+            // Call function to generate 5-day dashboard
+            generate5DayDashboard(lat, lon);
+        }
     });
 }
 
@@ -176,6 +175,29 @@ function addToPrevSearch(cityInput) {
     
 }
 
+// When user clicks a previous search, populate text from local storage info
+prevSearch.click((e) => {
+    var btnClicked = $(e.target).attr('data-city');
+
+    // If there is a value for the 'data-city' attribute
+    if (btnClicked) {
+        cityInput = btnClicked;
+        // Clear containers
+        dashboard.empty();
+        forecastSection.empty();
+        var cityInfo = JSON.parse(localStorage.getItem(btnClicked));
+        console.log(cityInfo);
+
+        // If the date stored in local storage is different from right now, rerun the others
+
+        generateMainDashboard(cityInfo.temp, cityInfo.wind, cityInfo.humidity, cityInfo.uvIndex, btnClicked);
+
+        cityInfo.prevForecast.forEach(forecast => {
+            miniCard(forecast.temp, forecast.wind, forecast.humidity, forecast.date);
+        })
+    }
+})
+
 // Displays previous searches
 function displayPrevSearch(cityInput) {
     var cityBtn = $('<button type="button" class="btn btn-secondary">');
@@ -223,13 +245,14 @@ function addForecastToLocalStorage(cityInput, date, temp, wind, humidity) {
 // Load city's weather info upon click
 searchBtn.click(fetchGeocode);
 
-// When user clicks a previous search, populate text from local storage info
-
 // Display previous searches upon page load
 $(() => {
     // populate prevSearchArr array with the items in local storage
     var keys = Object.keys(localStorage);
     prevSearchArr = keys.map(key => key);
     
-    prevSearchArr.forEach(search => displayPrevSearch(search));
+    // Display buttons AND populate dashboard upon click
+    prevSearchArr.forEach(cityBtn => {
+        displayPrevSearch(cityBtn);
+    });
 })
