@@ -78,7 +78,16 @@ Finding the weather information of a city with just a city name was not possible
 
 ## Technologies Used
 
-HTML, CSS, JavaScript, jQuery, Bootstrap, Momentjs, OpenWeather One Call API, OpenWeather Geocode API, OpenWeather 5-Day Forecast API, and Git
+- HTML
+- CSS
+- JavaScript
+- jQuery
+- Bootstrap
+- Momentjs
+- OpenWeather One Call API
+- OpenWeather Geocode API
+- OpenWeather 5-Day Forecast API
+- Git
 
 ## Deployment Link
 
